@@ -24,14 +24,12 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String username = null;
         if(authHeader != null){
-            token = authHeader.substring(7);
-            username = jwtUtil.extractUsername(token);
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
             User user = userDAO.retrieveUser(username);
             if(jwtUtil.validateToken(token, user)){
-                UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), jwtUtil.getRolesFromToken(token));
+                UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), jwtUtil.getDefaultRoles());
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

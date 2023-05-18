@@ -48,18 +48,8 @@ public class JWTUtil {
     private Claims extractAllClaimsFromToken(String token){
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
+    protected List<SimpleGrantedAuthority> getDefaultRoles() {
+         return Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
-    protected List<SimpleGrantedAuthority> getRolesFromToken(String authToken) {
-        List<SimpleGrantedAuthority> roles = null;
-        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken).getBody();
-        Boolean isAdmin = claims.get("isAdmin", Boolean.class);
-        Boolean isUser = claims.get("isUser", Boolean.class);
-        if (isAdmin != null && isAdmin == true) {
-            roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        }
-        if (isUser != null && isUser == true) {
-            roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
-        }
-        return roles;
     }
 }
